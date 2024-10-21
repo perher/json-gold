@@ -1887,6 +1887,23 @@ func (c *Context) HasContainerMapping(property string, val string) bool {
 	return false
 }
 
+// HasContainerMapping2 returns true if the given term definition has the given container mapping.
+// Unlike HasContainerMapping, it checks the term definition from the active context rather than
+// looking the term up again in a (possibly property-scoped) context that may not define it.
+func (c *Context) HasContainerMapping2(td *TermDefinition, val string) bool {
+	if td == nil {
+		return false
+	}
+
+	for _, container := range td.Container {
+		if container == val {
+			return true
+		}
+	}
+
+	return false
+}
+
 // IsReverseProperty returns true if the given property is a reverse property
 func (c *Context) IsReverseProperty(property string) bool {
 	td := c.GetTermDefinition(property)
