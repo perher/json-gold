@@ -75,31 +75,36 @@ type JsonLdOptions struct { //nolint:stylecheck
 	// Nil by default, and nil costs nothing: no pointer is built and no
 	// callback is made.
 	ExpandedElementHandler ElementHandler
+
+	// MessageDigestAlgorithm is the hash algorithm used by URDNA2015 (RDFC-1.0) canonicalization.
+	// https://www.w3.org/TR/rdf-canon/#dfn-hash-algorithm
+	MessageDigestAlgorithm MessageDigestAlgorithm
 }
 
 // NewJsonLdOptions creates and returns new instance of JsonLdOptions with the given base.
 func NewJsonLdOptions(base string) *JsonLdOptions { //nolint:stylecheck
 	return &JsonLdOptions{
-		Base:                  base,
-		CompactArrays:         true,
-		ProcessingMode:        JsonLd_1_1,
-		DocumentLoader:        NewDefaultDocumentLoader(nil),
-		Embed:                 EmbedOnce,
-		Explicit:              false,
-		RequireAll:            true,
-		FrameDefault:          false,
-		OmitDefault:           false,
-		OmitGraph:             true,
-		Ordered:               false,
-		UseRdfType:            false,
-		UseNativeTypes:        false,
-		ProduceGeneralizedRdf: false,
-		InputFormat:           "",
-		Format:                "",
-		Algorithm:             AlgorithmURGNA2012,
-		UseNamespaces:         false,
-		OutputForm:            "",
-		SafeMode:              false,
+		Base:                   base,
+		CompactArrays:          true,
+		ProcessingMode:         JsonLd_1_1,
+		DocumentLoader:         NewDefaultDocumentLoader(nil),
+		Embed:                  EmbedOnce,
+		Explicit:               false,
+		RequireAll:             true,
+		FrameDefault:           false,
+		OmitDefault:            false,
+		OmitGraph:              true,
+		Ordered:                false,
+		UseRdfType:             false,
+		UseNativeTypes:         false,
+		ProduceGeneralizedRdf:  false,
+		InputFormat:            "",
+		Format:                 "",
+		Algorithm:              AlgorithmURGNA2012,
+		MessageDigestAlgorithm: MessageDigestAlgorithmSHA256, // https://www.w3.org/TR/rdf-canon/#dfn-hash-algorithm
+		UseNamespaces:          false,
+		OutputForm:             "",
+		SafeMode:               false,
 	}
 }
 
@@ -124,6 +129,7 @@ func (opt *JsonLdOptions) Copy() *JsonLdOptions {
 		InputFormat:            opt.InputFormat,
 		Format:                 opt.Format,
 		Algorithm:              opt.Algorithm,
+		MessageDigestAlgorithm: opt.MessageDigestAlgorithm,
 		UseNamespaces:          opt.UseNamespaces,
 		OutputForm:             opt.OutputForm,
 		SafeMode:               opt.SafeMode,

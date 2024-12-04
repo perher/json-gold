@@ -116,6 +116,8 @@ func escape(str string) string {
 	str = strings.ReplaceAll(str, "\n", "\\n")
 	str = strings.ReplaceAll(str, "\r", "\\r")
 	str = strings.ReplaceAll(str, "\t", "\\t")
+	str = strings.ReplaceAll(str, "\b", "\\b")
+	str = strings.ReplaceAll(str, "\f", "\\f")
 	return str
 }
 
