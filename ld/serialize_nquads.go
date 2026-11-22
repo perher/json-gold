@@ -194,6 +194,9 @@ func ParseNQuadsFrom(o interface{}) (*RDFDataset, error) {
 
 		// parse quad
 		q, err := nquads.ParseRaw(string(line))
+		if err == nil {
+			err = checkAbsoluteIRIs(q)
+		}
 		if err != nil {
 			return nil, NewJsonLdError(SyntaxError, fmt.Errorf("error while parsing N-Quads; invalid quad. line: %d. reason: %w", lineNumber, err))
 		}
@@ -270,6 +273,45 @@ func ParseNQuadsFrom(o interface{}) (*RDFDataset, error) {
 	}
 
 	return dataset, nil
+}
+
+// checkAbsoluteIRIs rejects quads that contain relative IRIs. N-Quads only allows absolute IRIs
+// (https://www.w3.org/TR/n-quads/#sec-iri).
+func checkAbsoluteIRIs(q quad.Quad) error {
+	check := func(position string, v quad.Value) error {
+		var iri quad.IRI
+
+		switch v := v.(type) {
+		case quad.IRI:
+			iri = v
+		case quad.TypedString:
+			iri = v.Type
+		default:
+			return nil
+		}
+
+		if strings.IndexByte(string(iri), ':') <= 0 {
+			return fmt.Errorf("%s is not an absolute IRI: <%s>", position, iri)
+		}
+
+		return nil
+	}
+
+	for _, c := range []struct {
+		position string
+		value    quad.Value
+	}{
+		{"subject", q.Subject},
+		{"predicate", q.Predicate},
+		{"object", q.Object},
+		{"graph name", q.Label},
+	} {
+		if err := check(c.position, c.value); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // ParseNQuads parses RDF in the form of N-Quads.
